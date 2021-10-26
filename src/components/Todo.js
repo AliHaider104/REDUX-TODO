@@ -1,19 +1,29 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 
 const Todo = () => {
   const [task, settask] = useState("");
-  const [list, setlist] = useState("");
+  const [list, setlist] = useState([]);
+
+  //? UseEffect not working properly
+  useEffect(() => {
+    console.log("UPDATED");
+  }, [list]);
 
   const dispatch = useDispatch();
-  const List = useSelector((state) => state.list);
+  var List = useSelector((state) => state.list);
 
-  const addTodoHandler = (value) => {
+  const AddTodoHandler = (value) => {
     dispatch({ type: "ADD", todo: value });
     setlist(List);
-    settask("");
+  };
+
+  const RemoveTodoHandler = (value) => {
+    dispatch({ type: "DELETE", todo: value });
+    setlist(List);
+    console.log(List);
   };
 
   return (
@@ -31,7 +41,8 @@ const Todo = () => {
         <button
           className="btn btn-success"
           onClick={() => {
-            addTodoHandler(task);
+            AddTodoHandler(task);
+            settask("");
           }}
         >
           Add
@@ -47,15 +58,22 @@ const Todo = () => {
             </tr>
           </thead>
           <tbody>
-            {List.map((todo) => (
+            {list.map((todo) => (
               //TODO: Add todo key
-              <tr>
+              <tr key={todo}>
                 <td>{todo}</td>
                 <td>
                   <button className="btn btn-outline-danger">Edit</button>
                 </td>
                 <td>
-                  <button className="btn btn-outline-danger">Delete</button>
+                  <button
+                    onClick={() => {
+                      RemoveTodoHandler(todo);
+                    }}
+                    className="btn btn-outline-danger"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
